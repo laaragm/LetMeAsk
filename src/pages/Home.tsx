@@ -11,20 +11,18 @@ import { Button } from '@material-ui/core';
 import { CustomButton } from '../components/CustomButton';
 
 import { auth, firebase } from '../services/firebase';
-
-import { TestContext } from '../App';
+import { AuthContext } from '../App';
 
 export function Home() {
 	const history = useHistory();
-	const { value, setValue } = useContext(TestContext);
+	const { user, signInWithGoogle } = useContext(AuthContext);
 
-	function handleCreateRoom() {
-		const provider = new firebase.auth.GoogleAuthProvider();
-		auth.signInWithPopup(provider).then(result => {
-			console.log(result);
+	async function handleCreateRoom() {
+		if (!user) {
+			await signInWithGoogle();
+		}
 
-			navigateToNewRoom(history);
-		});
+		navigateToNewRoom(history);
 	}
 
 	function navigateToNewRoom(history: any) {
@@ -39,7 +37,6 @@ export function Home() {
 				<p>Let your audience ask you questions in real time. Collect questions and let people send and upvote the ones they wanna hear.</p>
 			</aside>
 			<main>
-				<h1>{value}</h1>
 				<div className="main-content">
 					<img src={ logoImage } alt="LetMeAsk logo" />
 					<CustomButton 
