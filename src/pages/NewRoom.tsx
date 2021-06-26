@@ -1,14 +1,11 @@
 import illustrationImage from '../assets/images/illustration.svg';
 import logoImage from '../assets/images/logo.svg';
-import googleIconImage from '../assets/images/google-icon.svg';
 
-import { Button } from '@material-ui/core';
-import { Divider } from '@material-ui/core';
+import { CustomButton } from "../components/CustomButton";
 
 import '../styles/auth.scss';
-import { CustomButton } from '../components/CustomButton';
 
-export function Home() {
+export function NewRoom() {
 	return(
 		<div id="page-auth">
 			<aside>
@@ -19,22 +16,20 @@ export function Home() {
 			<main>
 				<div className="main-content">
 					<img src={ logoImage } alt="LetMeAsk logo" />
-					<CustomButton title="Create session with Google" cssClass="create-room">
-						<img className="google-image" src={ googleIconImage } alt="Google logo" />
-					</CustomButton>
-					<div className="separator">
-						Or join an existing session
-					</div>
+					<h2> Create new session </h2>
 					<form>
 						<input
 							type="text"
-							placeholder="Type the session's code"
+							placeholder="Session name"
 						/>
 						<CustomButton
-							title="Join session"
+							title="Create session"
 							cssClass="join-session-button"
-						/>						
+						/>
 					</form>
+					<p> 
+						Want to join an existing session? <a href="">Click here</a>
+					</p>			
 				</div>
 			</main>
 		</div>
