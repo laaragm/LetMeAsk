@@ -2,13 +2,19 @@ import illustrationImage from '../assets/images/illustration.svg';
 import logoImage from '../assets/images/logo.svg';
 import googleIconImage from '../assets/images/google-icon.svg';
 
+import { useHistory } from 'react-router-dom';
 import { Button } from '@material-ui/core';
-import { Divider } from '@material-ui/core';
 
 import '../styles/auth.scss';
 import { CustomButton } from '../components/CustomButton';
 
 export function Home() {
+	const history = useHistory();
+
+	function navigateToNewRoom() {
+		history.push('/rooms/new');
+	}
+	
 	return(
 		<div id="page-auth">
 			<aside>
@@ -19,7 +25,11 @@ export function Home() {
 			<main>
 				<div className="main-content">
 					<img src={ logoImage } alt="LetMeAsk logo" />
-					<CustomButton title="Create session with Google" cssClass="create-room">
+					<CustomButton 
+						title="Create session with Google" 
+						cssClass="create-room" 
+						onClick={ navigateToNewRoom }
+					>
 						<img className="google-image" src={ googleIconImage } alt="Google logo" />
 					</CustomButton>
 					<div className="separator">
@@ -32,7 +42,7 @@ export function Home() {
 						/>
 						<CustomButton
 							title="Join session"
-							cssClass="join-session-button"
+							cssClass="session-button"
 						/>						
 					</form>
 				</div>

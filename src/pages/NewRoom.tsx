@@ -1,3 +1,6 @@
+import { useHistory, Link } from 'react-router-dom';
+import { Button } from '@material-ui/core';
+
 import illustrationImage from '../assets/images/illustration.svg';
 import logoImage from '../assets/images/logo.svg';
 
@@ -24,11 +27,11 @@ export function NewRoom() {
 						/>
 						<CustomButton
 							title="Create session"
-							cssClass="join-session-button"
+							cssClass="session-button"
 						/>
 					</form>
 					<p> 
-						Want to join an existing session? <a href="">Click here</a>
+						Want to join an existing session? <Link to="/">Click here</Link>
 					</p>			
 				</div>
 			</main>
