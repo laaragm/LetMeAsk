@@ -3,7 +3,7 @@ import deleteImage from '../assets/images/delete.svg';
 import '../styles/room.scss';
 import '../styles/question.scss';
 
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { CustomButton } from '../components/CustomButton';
 import { RoomCode } from '../components/RoomCode';
@@ -20,6 +20,7 @@ type RoomParameters = {
 
 export function AdminRoom() {
 	const { user } = useAuth();
+	const history = useHistory();
 	const parameters = useParams<RoomParameters>();
 	const roomId = parameters.id;
 	
@@ -27,8 +28,24 @@ export function AdminRoom() {
 
 	async function handleDeleteQuestion(questionId: string) {
 		if (window.confirm('Are you sure you want to delete this question?')) {
-			const questionReference = await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+			await deleteQuestion(questionId);
 		}
+	}
+
+	async function deleteQuestion(questionId: string) {
+		await database.ref(`rooms/${roomId}/questions/${questionId}`).remove();
+	}
+
+	async function handleEndRoom() {
+		await database.ref(`rooms/${roomId}`).update({
+			end: new Date(),
+		});
+
+		redirectToHome();
+	}
+
+	function redirectToHome() {
+		history.push('/');
 	}
 
 	return(
@@ -38,7 +55,11 @@ export function AdminRoom() {
 					<img src={ logoImage } alt="Letmeask" />
 					<div> 
 						<RoomCode code={ roomId } />
-						<CustomButton title="End session" cssClass="end-session-button" />
+						<CustomButton
+							title="End session" 
+							cssClass="end-session-button"
+							onClick={ handleEndRoom }
+						/>
 					</div>
 				</div>
 			</header>
