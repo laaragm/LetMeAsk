@@ -2,13 +2,37 @@ import logoImage from '../assets/images/logo.svg';
 import '../styles/room.scss';
 
 import { useParams } from 'react-router-dom';
+import { FormEvent, useEffect, useState } from 'react';
+import { TextareaAutosize } from '@material-ui/core';
 
 import { CustomButton } from '../components/CustomButton';
 import { RoomCode } from '../components/RoomCode';
-import { FormEvent, useState } from 'react';
+
 import { useAuth } from '../hooks/useAuth';
+
 import { database } from '../services/firebase';
-import { TextareaAutosize, TextField } from '@material-ui/core';
+
+
+type FirebaseQuestions = Record<string, {
+	author: {
+		name: string;
+		avatar: string;
+	}
+	content: string;
+	isAnswered: boolean;
+	isHighlighted: boolean;
+}>
+
+type Question = {
+	id: string,
+	author: {
+		name: string;
+		avatar: string;
+	}
+	content: string;
+	isAnswered: boolean;
+	isHighlighted: boolean;
+}
 
 type RoomParameters = {
 	id: string;
@@ -18,7 +42,36 @@ export function Room() {
 	const { user } = useAuth();
 	const parameters = useParams<RoomParameters>();
 	const [ newQuestion, setNewQuestion ] = useState('');
+	const [ questions, setQuestions ] = useState<Question[]>([]);
+	const [ title, setTitle ] = useState('');
 	const roomId = parameters.id;
+
+	useEffect(() => {
+		const roomReference = getRoom();
+
+		// if you want to listen to an event only once you use "once", otherwise you use "on"
+		roomReference.on('value', room => {
+			const databaseRoom = room.val();
+			const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
+
+			const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
+				return {
+					id: key,
+					content: value.content,
+					author: value.author,
+					isHighlighted: value.isHighlighted,
+					isAnswered: value.isAnswered,
+				}
+			});
+
+			setTitle(databaseRoom.title);
+			setQuestions(parsedQuestions);
+		})
+	}, [roomId]);
+
+	function getRoom() {
+		return database.ref(`rooms/${roomId}`);
+	}
 
 	async function handleSendQuestion(event: FormEvent) {
 		event.preventDefault();
@@ -65,8 +118,8 @@ export function Room() {
 
 			<main>
 				<div className="room-title">
-					<h1> Sala React </h1>
-					<span> 4 perguntas </span>
+					<h1> Sala { title } </h1>
+					{ questions.length > 0 && <span> { questions.length } question(s) </span> }
 				</div>
 
 				<form>
