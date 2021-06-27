@@ -1,5 +1,5 @@
 import { BrowserRouter, Route } from 'react-router-dom';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useContext } from 'react';
 
 import { auth, firebase } from './services/firebase';
@@ -25,22 +25,35 @@ export const AuthContext = createContext({} as AuthContextType); // the argument
 function App() {
 	const [user, setUser] = useState<User>();
 
+	// Similar to Vue's @Watch
+	useEffect(() => {
+		auth.onAuthStateChanged(user => {
+			if (user) {
+				manageUser(user);
+			}
+		})
+	})
+
 	async function signInWithGoogle() {
 		const provider = new firebase.auth.GoogleAuthProvider();
 		const result = await auth.signInWithPopup(provider);
 
 		if (result.user) {
-			const { displayName, photoURL, uid } = result.user;
-			if (!displayName || !photoURL) {
-				throw new Error('Missing information from Google Account.');
-			}
-
-			setUser({
-				id: uid,
-				name: displayName,
-				avatar: photoURL
-			});
+			manageUser(result.user);
 		}
+	}
+
+	function manageUser(user: firebase.User) {
+		const { displayName, photoURL, uid } = user;
+		if (!displayName || !photoURL) {
+			throw new Error('Missing information from Google Account.');
+		}
+
+		setUser({
+			id: uid,
+			name: displayName,
+			avatar: photoURL
+		});
 	}
 
 	return (
