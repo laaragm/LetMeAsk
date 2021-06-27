@@ -1,9 +1,10 @@
 import logoImage from '../assets/images/logo.svg';
 import '../styles/room.scss';
+import '../styles/question.scss';
 
 import { useParams } from 'react-router-dom';
 import { FormEvent, useEffect, useState } from 'react';
-import { TextareaAutosize } from '@material-ui/core';
+import { TextareaAutosize, TextField } from '@material-ui/core';
 
 import { CustomButton } from '../components/CustomButton';
 import { RoomCode } from '../components/RoomCode';
@@ -11,6 +12,7 @@ import { RoomCode } from '../components/RoomCode';
 import { useAuth } from '../hooks/useAuth';
 
 import { database } from '../services/firebase';
+import { Question } from '../components/Question';
 
 
 type FirebaseQuestions = Record<string, {
@@ -23,7 +25,7 @@ type FirebaseQuestions = Record<string, {
 	isHighlighted: boolean;
 }>
 
-type Question = {
+type QuestionType = {
 	id: string,
 	author: {
 		name: string;
@@ -42,7 +44,7 @@ export function Room() {
 	const { user } = useAuth();
 	const parameters = useParams<RoomParameters>();
 	const [ newQuestion, setNewQuestion ] = useState('');
-	const [ questions, setQuestions ] = useState<Question[]>([]);
+	const [ questions, setQuestions ] = useState<QuestionType[]>([]);
 	const [ title, setTitle ] = useState('');
 	const roomId = parameters.id;
 
@@ -84,6 +86,14 @@ export function Room() {
 			throw new Error('You must be logged in to send a question.');
 		}
 
+		const question = build();
+
+		await createQuestion(question);
+
+		eraseQuestion();
+	}
+
+	function build() {
 		const question = {
 			content: newQuestion,
 			author: {
@@ -92,11 +102,9 @@ export function Room() {
 			},
 			isHighlighted: false,
 			isAnswered: false,
-		}
+		};
 
-		await createQuestion(question);
-
-		eraseQuestion();
+		return question;
 	}
 
 	async function createQuestion(question: {}) {
@@ -118,14 +126,15 @@ export function Room() {
 
 			<main>
 				<div className="room-title">
-					<h1> Sala { title } </h1>
+					<h1> Room { title } </h1>
 					{ questions.length > 0 && <span> { questions.length } question(s) </span> }
 				</div>
 
 				<form>
 					<TextareaAutosize
 						className="question-field"
-						rowsMin={1}
+						rows={1}
+						rowsMax={Infinity}
 						placeholder="What do you want to ask?"
 						onChange={ event => setNewQuestion(event.target.value) }
 						name={ newQuestion }
@@ -147,11 +156,21 @@ export function Room() {
 							cssClass="send-question-button"
 							onClick={ handleSendQuestion }
 							isDisabled={ !user }
-						>
-							
-						</CustomButton>
+						/>
 					</div>
 				</form>
+				
+				<div className="question-list">
+					{ questions.map(question => {
+						return (
+							<Question
+								key={ question.id }
+								content={ question.content }
+								author={ question.author }
+							/>
+						)
+					}) }
+				</div>
 			</main>
 		</div>
 	);

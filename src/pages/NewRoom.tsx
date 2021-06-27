@@ -40,7 +40,7 @@ export function NewRoom() {
 	}
 
 	function navigateToRoom(history: any, id: string) {
-		history.push(`rooms/${id}`);
+		history.push(`/rooms/${id}`);
 	}
 
 	return(
