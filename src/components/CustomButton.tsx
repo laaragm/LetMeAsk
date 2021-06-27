@@ -9,31 +9,21 @@ type ButtonProps = {
 	onClick?: any,
 	cssClass?: string,
 	children?: any,
-    isDisabled?: boolean,
+	isDisabled?: boolean,
+	isOutlined?: boolean
 }
 
-export function CustomButton(props: ButtonProps) {
+export function CustomButton({ isOutlined = true, ...props }: ButtonProps) {
 	return(
 		<div className="button" onClick={ props.onClick }>
-			{ props.cssClass ? (
-				<Button 
-                    variant="outlined" 
-                    className={ props.cssClass }
-                    disabled={ props.isDisabled || false }
-                >
-                    { props.children ?? props.children }
-                    { props.title }
-				</Button>
-			) : (
-				<Button 
-                    variant="outlined" 
-                    onClick={ props.onClick }
-                    disabled={ props.isDisabled || false }
-                >
-                    { props.children ?? props.children }
-                    { props.title }
-				</Button>
-			) }
+			<Button 
+				variant={ isOutlined ? 'outlined' : 'contained' }
+				className={ props.cssClass ? props.cssClass : '' }
+				disabled={ props.isDisabled || false }
+			>
+				{ props.children ?? props.children }
+				{ props.title }
+			</Button>
 		</div>
 	);
 }

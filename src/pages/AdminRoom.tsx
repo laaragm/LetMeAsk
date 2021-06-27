@@ -19,12 +19,12 @@ type RoomParameters = {
 	id: string;
 }
 
-export function Room() {
+export function AdminRoom() {
 	const { user } = useAuth();
 	const parameters = useParams<RoomParameters>();
 	const [ newQuestion, setNewQuestion ] = useState('');
 	const roomId = parameters.id;
-
+	
 	const { questions, title } = useRoom(roomId);
 
 	async function handleSendQuestion(event: FormEvent) {
@@ -72,7 +72,10 @@ export function Room() {
 			<header> 
 				<div className="content">
 					<img src={ logoImage } alt="Letmeask" />
-					<RoomCode code={ roomId } />
+					<div> 
+						<RoomCode code={ roomId } />
+						<CustomButton title="End session" cssClass="end-session-button" />
+					</div>
 				</div>
 			</header>
 
@@ -82,36 +85,6 @@ export function Room() {
 					{ questions.length > 0 && <span> { questions.length } question(s) </span> }
 				</div>
 
-				<form>
-					<TextareaAutosize
-						className="question-field"
-						rows={1}
-						rowsMax={Infinity}
-						placeholder="What do you want to ask?"
-						onChange={ event => setNewQuestion(event.target.value) }
-						name={ newQuestion }
-					/>
-
-					<div className="form-footer">
-						{ user ? (
-							<div className="user-info"> 
-								<img src={ user.avatar } alt={ user.name } />
-								<span> { user.name } </span>
-							</div>
-						) : (
-							<span> 
-								In order to ask a question, please <button> login </button>.
-							</span>
-						) }
-						<CustomButton 
-							title="Send question"
-							cssClass="send-question-button"
-							onClick={ handleSendQuestion }
-							isDisabled={ !user }
-						/>
-					</div>
-				</form>
-				
 				<div className="question-list">
 					{ questions.map(question => {
 						return (

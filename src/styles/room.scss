@@ -13,6 +13,19 @@
 			> img {
 				max-height: 2.813rem;
 			}
+
+			> div {
+				display: flex;
+				gap: 1rem;
+
+				.end-session-button {
+					height: 2.5rem;
+					border-radius: 0.5rem;
+					border-color: #835afd;
+					color: #835afd;
+					background: #fff;
+				}
+			}
 		}
 	}
 
