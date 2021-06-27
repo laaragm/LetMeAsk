@@ -13,28 +13,29 @@ import { useAuth } from '../hooks/useAuth';
 
 import { database } from '../services/firebase';
 import { Question } from '../components/Question';
+import { useRoom } from '../hooks/useRoom';
 
 
-type FirebaseQuestions = Record<string, {
-	author: {
-		name: string;
-		avatar: string;
-	}
-	content: string;
-	isAnswered: boolean;
-	isHighlighted: boolean;
-}>
+// type FirebaseQuestions = Record<string, {
+// 	author: {
+// 		name: string;
+// 		avatar: string;
+// 	}
+// 	content: string;
+// 	isAnswered: boolean;
+// 	isHighlighted: boolean;
+// }>
 
-type QuestionType = {
-	id: string,
-	author: {
-		name: string;
-		avatar: string;
-	}
-	content: string;
-	isAnswered: boolean;
-	isHighlighted: boolean;
-}
+// type QuestionType = {
+// 	id: string,
+// 	author: {
+// 		name: string;
+// 		avatar: string;
+// 	}
+// 	content: string;
+// 	isAnswered: boolean;
+// 	isHighlighted: boolean;
+// }
 
 type RoomParameters = {
 	id: string;
@@ -44,36 +45,9 @@ export function Room() {
 	const { user } = useAuth();
 	const parameters = useParams<RoomParameters>();
 	const [ newQuestion, setNewQuestion ] = useState('');
-	const [ questions, setQuestions ] = useState<QuestionType[]>([]);
-	const [ title, setTitle ] = useState('');
 	const roomId = parameters.id;
-
-	useEffect(() => {
-		const roomReference = getRoom();
-
-		// if you want to listen to an event only once you use "once", otherwise you use "on"
-		roomReference.on('value', room => {
-			const databaseRoom = room.val();
-			const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
-
-			const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
-				return {
-					id: key,
-					content: value.content,
-					author: value.author,
-					isHighlighted: value.isHighlighted,
-					isAnswered: value.isAnswered,
-				}
-			});
-
-			setTitle(databaseRoom.title);
-			setQuestions(parsedQuestions);
-		})
-	}, [roomId]);
-
-	function getRoom() {
-		return database.ref(`rooms/${roomId}`);
-	}
+	
+	const { questions, title } = useRoom(roomId);
 
 	async function handleSendQuestion(event: FormEvent) {
 		event.preventDefault();
