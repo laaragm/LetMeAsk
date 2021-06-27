@@ -8,6 +8,7 @@ import { RoomCode } from '../components/RoomCode';
 import { FormEvent, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { database } from '../services/firebase';
+import { TextareaAutosize, TextField } from '@material-ui/core';
 
 type RoomParameters = {
 	id: string;
@@ -31,7 +32,7 @@ export function Room() {
 		}
 
 		const question = {
-			content: newQuestion.trim,
+			content: newQuestion,
 			author: {
 				name: user?.name,
 				avatar: user?.avatar,
@@ -40,13 +41,13 @@ export function Room() {
 			isAnswered: false,
 		}
 
-		await createQuestion();
+		await createQuestion(question);
 
 		eraseQuestion();
 	}
 
-	async function createQuestion() {
-		await database.ref(`rooms/${roomId}/questions`).push();
+	async function createQuestion(question: {}) {
+		await database.ref(`rooms/${roomId}/questions`).push(question);
 	}
 
 	function eraseQuestion() {
@@ -69,10 +70,12 @@ export function Room() {
 				</div>
 
 				<form>
-					<textarea
+					<TextareaAutosize
+						className="question-field"
+						rowsMin={1}
 						placeholder="What do you want to ask?"
 						onChange={ event => setNewQuestion(event.target.value) }
-						value={ newQuestion }
+						name={ newQuestion }
 					/>
 
 					<div className="form-footer">
