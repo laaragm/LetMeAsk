@@ -43,6 +43,11 @@ export function Home() {
 			return;
 		}
 
+        if (roomReference.val().end) {
+            alert('Room has been already closed.');
+            return;
+        }
+
 		navigateToRoom(history);
 	}
 
