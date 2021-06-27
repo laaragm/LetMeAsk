@@ -9,10 +9,14 @@ import { useHistory } from 'react-router-dom';
 import { CustomButton } from '../components/CustomButton';
 
 import { useAuth } from '../hooks/useAuth';
+import { TextField } from '@material-ui/core';
+import { FormEvent, useState } from 'react';
+import { database } from '../services/firebase';
 
 export function Home() {
 	const history = useHistory();
 	const { user, signInWithGoogle } = useAuth();
+	const [ roomCode, setRoomCode ] = useState('');
 
 	async function handleCreateRoom() {
 		if (!user) {
@@ -24,6 +28,26 @@ export function Home() {
 
 	function navigateToNewRoom(history: any) {
 		history.push('/rooms/new');
+	}
+
+	async function handleJoinRoom(event: FormEvent) {
+		event.preventDefault();
+
+		if (roomCode.trim() === '') {
+			return;
+		}
+
+		const roomReference = await database.ref(`rooms/${roomCode}`).get();
+		if (!roomReference.exists()) {
+			alert('Room does not exist.');
+			return;
+		}
+
+		navigateToRoom(history);
+	}
+
+	function navigateToRoom(history: any) {
+		history.push(`/rooms/${roomCode}`);
 	}
 
 	return(
@@ -47,13 +71,17 @@ export function Home() {
 						Or join an existing session
 					</div>
 					<form>
-						<input
-							type="text"
+						<TextField
 							placeholder="Type the session's code"
+							variant="outlined"
+							className="session-code"
+							onChange={ event => setRoomCode(event.target.value) }
+							name={ roomCode }
 						/>
 						<CustomButton
 							title="Join session"
 							cssClass="session-button"
+							onClick={ handleJoinRoom }
 						/>						
 					</form>
 				</div>

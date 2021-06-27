@@ -160,4 +160,21 @@
 		}
 		
 	}
+
+	.session-name {
+		margin-bottom: 1rem;
+		display: flex;
+		flex-direction: column;
+
+		border-radius: 0.5rem;
+		border: 1px solid #a8a8b3;
+	}
+
+	.session-code {
+		display: flex;
+		flex-direction: column;
+
+		border-radius: 0.5rem;
+		border: 1px solid #a8a8b3;
+	}
 }
