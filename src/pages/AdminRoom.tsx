@@ -1,5 +1,8 @@
 import logoImage from '../assets/images/logo.svg';
 import deleteImage from '../assets/images/delete.svg';
+import checkImage from '../assets/images/check.svg';
+import answerImage from '../assets/images/answer.svg';
+
 import '../styles/room.scss';
 import '../styles/question.scss';
 
@@ -48,6 +51,18 @@ export function AdminRoom() {
 		history.push('/');
 	}
 
+	async function handleAnsweredQuestion(questionId: string) {
+		await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+			isAnswered: true,
+		});
+	}
+
+	async function handleHighlightedQuestion(questionId: string) {
+		await database.ref(`rooms/${roomId}/questions/${questionId}`).update({
+			isHighlighted: true,
+		});
+	}
+
 	return(
 		<div id="page-room">
 			<header> 
@@ -77,7 +92,25 @@ export function AdminRoom() {
 								key={ question.id }
 								content={ question.content }
 								author={ question.author }
+								isAnswered={ question.isAnswered }
+								isHighlighted={ question.isHighlighted }
 							>
+								{ !question.isAnswered && (
+									<>
+										<button
+											type="button"
+											onClick={ () => handleAnsweredQuestion(question.id) }
+										>
+											<img src={ checkImage } alt="Flag question as answered" />
+										</button>
+										<button
+											type="button"
+											onClick={ () => handleHighlightedQuestion(question.id) }
+										>
+											<img src={ answerImage } alt="Highlight question" />
+										</button>
+									</>
+								) }
 								<button
 									type="button"
 									onClick={ () => handleDeleteQuestion(question.id) }
